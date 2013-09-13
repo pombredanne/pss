@@ -19,6 +19,7 @@ from test.utils import (
 class TestPssMain(unittest.TestCase):
     testdir1 = path_to_testdir('testdir1')
     testdir2 = path_to_testdir('testdir2')
+    test_types = path_to_testdir('test_types')
     of = None
 
     def setUp(self):
@@ -183,6 +184,79 @@ class TestPssMain(unittest.TestCase):
         self.assertFoundFiles(self.of,
                 ['testdir2/somescript'])
 
+        # try some option mix-n-matching
+
+        # just a pattern type
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['--scons', '-f'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                ['test_types/a.scons', 'test_types/SConstruct'])
+
+        # pattern type + extension type
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['--scons', '--lua', '-f'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                ['test_types/a.scons', 'test_types/SConstruct',
+                 'test_types/a.lua'])
+
+        # as before, with include filter
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['--scons', '--lua', '-g', 'lua'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                ['test_types/a.lua'])
+
+        # all known types
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['-f'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                [   'test_types/a.scons',
+                    'test_types/SConstruct',
+                    'test_types/a.lua',
+                    'test_types/a.js',
+                    'test_types/a.java',
+                    'test_types/a.bat',
+                    'test_types/a.cmd',
+                    ])
+
+        # all known types with extension type exclusion
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['-f', '--nobatch', '--nojava'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                [   'test_types/a.scons',
+                    'test_types/SConstruct',
+                    'test_types/a.lua',
+                    'test_types/a.js',
+                    ])
+
+        # all known types with pattern type exclusion
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['-f', '--noscons'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                [   'test_types/a.java',
+                    'test_types/a.lua',
+                    'test_types/a.bat',
+                    'test_types/a.cmd',
+                    'test_types/a.js',
+                    ])
+
+        # all known types with pattern type exclusion and filter inclusion
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['-g', '(lua|java)', '--noscons'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                [   'test_types/a.java',
+                    'test_types/a.lua',
+                    ])
+
+        # all known types with extension and pattern type exclusion
+        self.of = MockOutputFormatter('test_types')
+        self._run_main(['-f', '--noscons', '--nojs'], dir=self.test_types)
+        self.assertFoundFiles(self.of,
+                [   'test_types/a.java',
+                    'test_types/a.lua',
+                    'test_types/a.bat',
+                    'test_types/a.cmd',
+                    ])
+
     def test_only_find_files_g(self):
         self._run_main(['--cc', '-g', r'.*y\.'])
         self.assertFoundFiles(self.of,
@@ -238,6 +312,17 @@ class TestPssMain(unittest.TestCase):
                 outputs('test_types/a.java') +
                 outputs('test_types/a.js')))
 
+        # include js and scons
+        of = MockOutputFormatter('test_types')
+        self._run_main(
+            ['abc', '--js', '--scons'],
+            output_formatter=of,
+            dir=rootdir)
+
+        self.assertEqual(sorted(of.output), sorted(
+                outputs('test_types/a.js') +
+                outputs('test_types/a.scons')))
+
         # empty include_types - so include all known types
         of = MockOutputFormatter('test_types')
         self._run_main(
@@ -247,6 +332,7 @@ class TestPssMain(unittest.TestCase):
 
         self.assertEqual(sorted(of.output), sorted(
                 outputs('test_types/a.java') +
+                outputs('test_types/a.scons') +
                 outputs('test_types/a.js') +
                 outputs('test_types/a.lua') +
                 outputs('test_types/a.cmd') +
@@ -255,7 +341,7 @@ class TestPssMain(unittest.TestCase):
         # empty include_types, but some are excluded
         of = MockOutputFormatter('test_types')
         self._run_main(
-            ['abc', '--nojs', '--nojava', '--nobatch'],
+            ['abc', '--nojs', '--nojava', '--nobatch', '--noscons'],
             output_formatter=of,
             dir=rootdir)
 
