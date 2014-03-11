@@ -1,6 +1,17 @@
 Changelog
 =========
 
++ Version 1.40 (??)
+
+  - Added .metadata directory to ignore list (issue #17).
+  - Added the .haml extension for Ruby
+  - Added new types: CUDA (.cu), OpenCL (.cl)
+  - Added --td as a short-name for --tablegen
+  - Use new capabilities of setuptools if available, when creating a
+    distribution for Windows (pull request #18)
+  - Added Bash completion script in tools/pss-bash-completion.bash, along with a
+    special option for pss to dump the list of types for it.
+
 + Version 1.39 (20.09.2013)
 
   - Fixed a number of problems with mixing regex pattern and extensions in file

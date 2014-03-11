@@ -42,7 +42,9 @@ TYPE_MAP = {
     'csharp':
         TypeSpec(['.cs'], []),
     'css':
-        TypeSpec(['.css'], []),
+        TypeSpec(['.css', '.less'], []),
+    'cuda':
+        TypeSpec(['.cu'], []),
     'cython':
         TypeSpec(['.pyx', '.pxd', '.pyxbld'], []),
     'elisp':
@@ -85,6 +87,8 @@ TYPE_MAP = {
         TypeSpec(['.mm', '.h'], []),
     'ocaml':
         TypeSpec(['.ml', '.mli'], []),
+    'opencl':
+        TypeSpec(['.cl'], []),
     'parrot':
         TypeSpec(['.pir', '.pasm', '.pmc', '.ops', '.pod', '.pg', '.tg'], []),
     'perl':
@@ -104,7 +108,7 @@ TYPE_MAP = {
     'rb':
         TypeSpec(['.rb'], []),
     'ruby':
-        TypeSpec(['.rb', '.rhtml', '.rjs', '.rxml', '.erb', '.rake'], []),
+        TypeSpec(['.rb', '.rhtml', '.rjs', '.rxml', '.erb', '.rake', '.haml'], []),
     'scala':
         TypeSpec(['.scala'], []),
     'scheme':
@@ -121,6 +125,8 @@ TYPE_MAP = {
         TypeSpec(['.td'], []),
     'tcl':
         TypeSpec(['.tck', '.itcl', '.itk'], []),
+    'td':  # short-name for --tablegen
+        TypeSpec(['.td'], []),
     'tex':
         TypeSpec(['.tex', '.cls', '.sty'], []),
     'tt':
@@ -142,7 +148,8 @@ TYPE_MAP = {
 IGNORED_DIRS = set([
     'blib', '_build', '.bzr', '.cdv', 'cover_db', '__pycache__',
     'CVS', '_darcs', '~.dep', '~.dot', '.git', '.hg', '~.nib',
-    '.pc', '~.plst', 'RCS', 'SCCS', '_sgbak', '.svn', '.tox'])
+    '.pc', '~.plst', 'RCS', 'SCCS', '_sgbak', '.svn', '.tox',
+    '.metadata', '.cover'])
 
 IGNORED_FILE_PATTERNS = set([r'~$', r'#.+#$', r'[._].*\.swp$', r'core\.\d+$'])
 
