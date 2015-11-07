@@ -71,6 +71,8 @@ TYPE_MAP = {
         TypeSpec(['.json'], []),
     'jsp':
         TypeSpec(['.jsp'], []),
+    'julia':
+        TypeSpec(['.jl'], []),
     'lisp':
         TypeSpec(['.lisp', '.lsp', '.cl'], []),
     'llvm':
@@ -97,6 +99,8 @@ TYPE_MAP = {
         TypeSpec(['.php', '.phpt', '.php3', '.php4', '.php5', '.phtml'], []),
     'plone':
         TypeSpec(['.pt', '.cpt', '.metadata', '.cpy', '.py'], []),
+    'proto':
+        TypeSpec(['.proto'], []),
     'py':
         TypeSpec(['.py', '.pyw'], []),
     'python':
@@ -135,8 +139,12 @@ TYPE_MAP = {
         TypeSpec(['.txt', '.text'], []),
     'vb':
         TypeSpec(['.bas', '.cls', '.frm', '.ctl', '.vb', '.resx'], []),
+    'verilog':
+        TypeSpec(['.v', '.sv'], []),
     'vim':
         TypeSpec(['.vim'], []),
+    'vhdl':
+        TypeSpec(['.vhd', '.vhdl'], []),
     'withoutext':
         TypeSpec([''], []),
     'xml':
@@ -192,10 +200,13 @@ def pss_run(roots,
         ncontext_after=0,
         ):
     """ The main pss invocation function - handles all PSS logic.
+
         For documentation of options, see the --help output of the pss script,
         and study how its command-line arguments are parsed and passed to
         this function. Besides, most options are passed verbatim to submodules
         and documented there. I don't like to repeat myself too much :-)
+
+        Returns True if a match was found, False otherwise.
     """
     # Set up a default output formatter, if none is provided
     #
@@ -275,6 +286,8 @@ def pss_run(roots,
             literal_pattern=literal_pattern,
             max_match_count=max_match_count)
 
+    match_found = False
+
     # All systems go...
     #
     for filepath in filefinder.files():
@@ -283,6 +296,7 @@ def pss_run(roots,
         if (    only_find_files and
                 only_find_files_option == PssOnlyFindFilesOption.ALL_FILES):
             output_formatter.found_filename(filepath)
+            match_found = True
             continue
         # The main path: do matching inside the file.
         # Some files appear to be binary - they are not of a known file type
@@ -300,6 +314,7 @@ def pss_run(roots,
                     if matches:
                         output_formatter.binary_file_matches(
                                 'Binary file %s matches\n' % filepath)
+                        match_found = True
                     continue
                 # istextfile does some reading on fileobj, so rewind it
                 fileobj.seek(0)
@@ -315,6 +330,7 @@ def pss_run(roots,
                             only_find_files_option == PssOnlyFindFilesOption.FILES_WITHOUT_MATCHES))
                     if found:
                         output_formatter.found_filename(filepath)
+                        match_found = True
                     continue
 
                 # This is the "normal path" when we examine and display the
@@ -323,6 +339,7 @@ def pss_run(roots,
                 if not matches:
                     # Nothing to see here... move along
                     continue
+                match_found =True
                 output_formatter.start_matches_in_file(filepath)
                 if ncontext_before > 0 or ncontext_after > 0:
                     # If context lines should be printed, we have to read in the
@@ -367,6 +384,9 @@ def pss_run(roots,
             # There was a problem opening or reading the file, so ignore it.
             pass
 
+    return match_found
+
+
 def _pattern_has_uppercase(pattern):
     """ Check whether the given regex pattern has uppercase letters to match
     """
@@ -406,5 +426,3 @@ def _build_match_context_dict(matches, ncontext_before, ncontext_after):
             if ncontext not in d:
                 d[ncontext] = LINE_CONTEXT, None
     return d
-
-

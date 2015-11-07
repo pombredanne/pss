@@ -1,7 +1,12 @@
 Changelog
 =========
 
-+ Version 1.40 (??)
++ Version 1.41 (??)
+
+  - Added --julia, --vhdl and --verilog types (pull requests #29, #30)
+  - Colorama updated to newer version (#33)
+
++ Version 1.40 (03.11.2014)
 
   - Added .metadata directory to ignore list (issue #17).
   - Added the .haml extension for Ruby
@@ -11,6 +16,8 @@ Changelog
     distribution for Windows (pull request #18)
   - Added Bash completion script in tools/pss-bash-completion.bash, along with a
     special option for pss to dump the list of types for it.
+  - Exit with a return code similarly as ack and grep (issue #24).
+    0: Match found or help/version printed. 1: No match. 2: Error.
 
 + Version 1.39 (20.09.2013)
 
